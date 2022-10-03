@@ -1,24 +1,52 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
 
 function App() {
+
+  const [color, setColor] = useState("");
+  const [answers, setAnswers] = useState<string[]>([]);
+  const [results, setResults] = useState<boolean | undefined>(
+    undefined
+  )
+
+  const generateColors = () => {
+    const actualColor = getRandomColor();
+    setColor(actualColor);
+    setAnswers(
+      [actualColor, getRandomColor(), getRandomColor()].sort(
+        () => 0.5 - Math.random()
+      )
+    );
+  };
+
+  const getRandomColor = () => {
+    return `#${Math.floor(Math.random()*16777215).toString(16)}`
+  };
+
+  useEffect(() => {
+    // TODO: Generate a random color
+    generateColors();
+  }, []);
+
+  const handleAnswer = (answer: string) => {
+    console.log(color)
+    if (color === answer) {
+      setResults(false);
+      generateColors();
+    } else {
+      setResults(true);
+    }
+  };
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      <div className="guess-me" style={{ background: color }}></div>
+      <div className='buttons'>
+      {answers.map((color) => {
+        return <button key={color} onClick={() => handleAnswer(color)}>{color}</button>
+      })}
+    </div>
+    {results  ? <div className='wrong'>Wrong Answer</div> : <div className='correct'>Correct</div>}
     </div>
   );
 }
